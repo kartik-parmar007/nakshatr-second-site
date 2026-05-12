@@ -85,17 +85,108 @@ export default function CinematicHome() {
   const isFinal = sceneState.scene.id === 'final';
   const isIntro = sceneState.scene.id === 'intro';
 
+  const prevScene = useMemo(() => {
+    const raw = clamp(progress) * (industryScenes.length - 1);
+    const prev = Math.max(Math.floor(raw) - 1, 0);
+    return industryScenes[prev];
+  }, [progress]);
+
   return (
     <div className="overflow-x-hidden bg-white">
       <section ref={journeyRef} className="relative bg-white pt-16">
         <div ref={frameRef} className="relative h-[calc(100svh-4rem)] min-h-[620px] overflow-hidden bg-white md:min-h-[680px]">
-          <div className="absolute inset-0 z-0">
+
+          {/* WebP cinematic backgrounds — cross-fade and parallax per scene */}
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#F8F9FA]">
+            {industryScenes.map((s, i) => {
+              if (!s.bgImage) return null;
+              
+              // Calculate local progress for parallax and fading
+              const localProgress = (progress * (industryScenes.length - 1)) - i;
+              
+              // Hide completely if out of range to save performance
+              if (Math.abs(localProgress) > 1.5) return null;
+              
+              const isActive = Math.abs(localProgress) <= 1;
+              const opacity = clamp(1 - Math.abs(localProgress));
+              // Slow push-in/pull-out and vertical slide for cinematic depth
+              const scale = 1.05 + (localProgress * 0.035);
+              const yOffset = localProgress * 4;
+              
+              return (
+                <div
+                  key={s.id}
+                  className="absolute inset-0"
+                  style={{
+                    opacity: opacity,
+                    zIndex: Math.abs(localProgress) < 0.5 ? 1 : 0,
+                  }}
+                >
+                  <img
+                    src={s.bgImage}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{
+                      transform: `scale(${scale}) translateY(${yOffset}%)`,
+                      transformOrigin: 'center center',
+                    }}
+                  />
+                  {/* Cinematic light sweep transition overlay */}
+                  <div 
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(${180 + localProgress * 30}deg, rgba(255,255,255,0) 0%, rgba(255,255,255,${Math.abs(localProgress) * 0.3}) 100%)`,
+                      mixBlendMode: 'soft-light'
+                    }}
+                  />
+                </div>
+              );
+            })}
+
+            {/* Atmosphere haze — layered depth blending 3D with background */}
+            <div
+              className="absolute inset-0 z-10"
+              style={{
+                background:
+                  'linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.05) 70%, rgba(255,255,255,0.5) 100%)',
+              }}
+            />
+
+            {/* Persistent Drone Route Line - visually connecting scenes */}
+            <div className="absolute inset-0 z-10 opacity-60 mix-blend-multiply">
+              <svg 
+                className="absolute w-full" 
+                style={{ height: '300%', top: '-100%', transform: `translateY(${-(progress * 30)}%)` }} 
+                viewBox="0 0 100 100" 
+                preserveAspectRatio="none"
+              >
+                <path 
+                  d="M 50,0 C 70,20 30,40 50,50 C 70,60 30,80 50,100" 
+                  fill="none" 
+                  stroke="url(#route-gradient)" 
+                  strokeWidth="0.2"
+                  strokeDasharray="1 1.5"
+                />
+                <defs>
+                  <linearGradient id="route-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#00AEEF" stopOpacity="0" />
+                    <stop offset="40%" stopColor="#00AEEF" stopOpacity="0.5" />
+                    <stop offset="60%" stopColor="#00AEEF" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#00AEEF" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div className="absolute inset-0 z-[1]">
             <HomeDroneCanvas progress={progress} isMobile={isMobile} />
           </div>
 
-          <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_18%,rgba(0,174,239,0.11),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.7)_86%)]" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-white via-white/85 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-white via-white/85 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_18%,rgba(0,174,239,0.07),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.55)_92%)]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-white via-white/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-white via-white/80 to-transparent" />
 
           <div className="pointer-events-none absolute inset-0 z-20">
             <div className="mx-auto flex h-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
@@ -139,14 +230,30 @@ export default function CinematicHome() {
 
           <div className="pointer-events-none absolute bottom-6 left-5 right-5 z-20 flex items-center justify-between sm:left-8 sm:right-8 lg:left-10 lg:right-10">
             <div className="hidden items-center gap-2 sm:flex">
-              {industryScenes.map((scene, index) => (
-                <span
-                  key={scene.id}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    index === sceneState.activeIndex ? 'w-9 bg-nk-cyan' : 'w-1.5 bg-[#D0DCE8]'
-                  }`}
-                />
-              ))}
+              {industryScenes.map((scene, index) => {
+                const isPast = index < sceneState.activeIndex;
+                const isActive = index === sceneState.activeIndex;
+                return (
+                  <div key={scene.id} className="flex items-center gap-2">
+                    <div 
+                      className={`relative flex h-2 w-2 items-center justify-center rounded-full transition-colors duration-500 ${
+                        isActive ? 'bg-nk-cyan' : isPast ? 'bg-[#A0B0C0]' : 'bg-transparent border border-[#A0B0C0]'
+                      }`}
+                    >
+                      {isActive && (
+                        <div className="absolute h-5 w-5 rounded-full border border-nk-cyan animate-ping opacity-30" />
+                      )}
+                    </div>
+                    {index < industryScenes.length - 1 && (
+                      <div 
+                        className={`h-[1px] w-4 transition-colors duration-500 ${
+                          isPast ? 'bg-[#A0B0C0]' : 'bg-transparent'
+                        }`} 
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <div className="ml-auto flex items-center gap-3">
               <div className="h-px w-20 bg-[#D0DCE8] sm:w-32">

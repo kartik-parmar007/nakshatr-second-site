@@ -8,6 +8,7 @@ export const industryScenes = [
     modelRotation: [0.08, -0.45, 0],
     camera: [-3.4, 1.45, 5.2],
     lookAt: [0.25, 0.05, 0],
+    bgImage: null,
   },
   {
     id: 'agriculture',
@@ -18,6 +19,7 @@ export const industryScenes = [
     modelRotation: [0.02, 0.72, 0],
     camera: [-4.4, 2.05, 5.8],
     lookAt: [0.15, -0.1, -0.2],
+    bgImage: '/images/home/agriculture-bg.webp',
   },
   {
     id: 'inspection',
@@ -28,6 +30,7 @@ export const industryScenes = [
     modelRotation: [0.04, -0.62, 0],
     camera: [3.9, 1.65, 5.1],
     lookAt: [-0.15, 0.05, 0],
+    bgImage: '/images/home/inspection-bg.webp',
   },
   {
     id: 'response',
@@ -38,6 +41,7 @@ export const industryScenes = [
     modelRotation: [0.04, 0.15, 0],
     camera: [-3.55, 1.8, 5.35],
     lookAt: [0.1, -0.05, -0.2],
+    bgImage: '/images/home/response-bg.webp',
   },
   {
     id: 'logistics',
@@ -48,6 +52,7 @@ export const industryScenes = [
     modelRotation: [0, -0.2, 0],
     camera: [4.1, 1.9, 5.4],
     lookAt: [0.1, -0.05, -0.1],
+    bgImage: '/images/home/logistics-bg.webp',
   },
   {
     id: 'mapping',
@@ -58,6 +63,7 @@ export const industryScenes = [
     modelRotation: [0.06, 0.52, 0],
     camera: [-3.9, 2.2, 5.55],
     lookAt: [0.05, -0.1, -0.15],
+    bgImage: '/images/home/mapping-bg.webp',
   },
   {
     id: 'security',
@@ -68,6 +74,7 @@ export const industryScenes = [
     modelRotation: [0.04, -0.52, 0],
     camera: [3.75, 1.65, 5.3],
     lookAt: [0.05, -0.05, -0.15],
+    bgImage: '/images/home/security-bg.webp',
   },
   {
     id: 'final',
@@ -78,5 +85,6 @@ export const industryScenes = [
     modelRotation: [0.08, -0.85, 0],
     camera: [0, 1.65, 5.6],
     lookAt: [0, 0, 0],
+    bgImage: null,
   },
 ];
