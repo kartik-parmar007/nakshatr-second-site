@@ -153,31 +153,7 @@ export default function CinematicHome() {
               }}
             />
 
-            {/* Persistent Drone Route Line - visually connecting scenes */}
-            <div className="absolute inset-0 z-10 opacity-60 mix-blend-multiply">
-              <svg 
-                className="absolute w-full" 
-                style={{ height: '300%', top: '-100%', transform: `translateY(${-(progress * 30)}%)` }} 
-                viewBox="0 0 100 100" 
-                preserveAspectRatio="none"
-              >
-                <path 
-                  d="M 50,0 C 70,20 30,40 50,50 C 70,60 30,80 50,100" 
-                  fill="none" 
-                  stroke="url(#route-gradient)" 
-                  strokeWidth="0.2"
-                  strokeDasharray="1 1.5"
-                />
-                <defs>
-                  <linearGradient id="route-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#00AEEF" stopOpacity="0" />
-                    <stop offset="40%" stopColor="#00AEEF" stopOpacity="0.5" />
-                    <stop offset="60%" stopColor="#00AEEF" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#00AEEF" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+
           </div>
 
           <div className="absolute inset-0 z-[1]">
